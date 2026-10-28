@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hand Drill</title>
-<meta name="theme-color" content="#16372F">
+<meta name="theme-color" content="#0F2923">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -61,7 +61,12 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
 .tally div{font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted);text-align:right}
 .tally b{display:block;font-size:24px;line-height:1.05;color:var(--ink);letter-spacing:0;font-weight:700;font-variant-numeric:tabular-nums}
 
-.controls{display:flex;gap:8px;align-items:stretch}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--felt-lo)}
+.controls{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;display:flex;gap:8px;align-items:stretch;
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-1 * max(16px,env(safe-area-inset-right,0px)));
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:var(--felt-lo);border-bottom:1px solid var(--line)}
+.ctl.hands-btn{border-color:rgba(221,183,101,.6);color:var(--brass)}
 .game-btn{flex:1;min-width:0;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);background:var(--well);border-radius:12px;padding:9px 12px;cursor:pointer}
 .game-btn .k{font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted)}
 .game-btn b{flex:1;min-width:0;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -69,7 +74,7 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
 .ctl{border:1px solid var(--line);background:var(--well);border-radius:12px;padding:9px 13px;font-weight:600;font-size:15px;cursor:pointer}
 
 /* play area */
-.play{display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px}
+.play{display:flex;flex-direction:column;gap:12px;scroll-margin-top:calc(76px + env(safe-area-inset-top,0px))}
 .prompt{margin:0;text-align:center;font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:14px;color:var(--brass)}
 .stage{container-type:inline-size;min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:8px}
 .seat{margin:4px 0 -2px;text-align:center;font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted)}
@@ -178,6 +183,34 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
 .gopt-tag{font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--brass)}
 .gopt-desc{display:block;color:var(--muted);font-size:14.5px;margin-top:2px}
 
+/* all-hands side panel */
+.drawer-back{position:fixed;inset:0;z-index:30;background:rgba(2,10,7,.55);opacity:0;pointer-events:none;transition:opacity .2s}
+.drawer-back.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:31;width:min(420px,92vw);display:flex;flex-direction:column;
+  background:var(--felt-lo);border-left:1px solid var(--line);box-shadow:-12px 0 30px rgba(0,0,0,.35);outline:none;
+  transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
+.drawer.open{transform:none;visibility:visible;transition:transform .25s ease,visibility 0s}
+.drawer-head{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);
+  padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:12px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
+.drawer-head h2{margin:0;font-family:var(--f-cond);font-weight:700;font-size:24px;line-height:1.1}
+.drawer-sub{margin:2px 0 0;color:var(--muted);font-size:14px}
+.drawer-body{position:relative;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hrow{align-items:start}
+.hrow .chip.sm{margin-top:2px}
+.hrow-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hrow .row-name{font-size:17px}
+.alias{color:var(--brass);font-size:15px;font-weight:500}
+.hrow.now{background:var(--brass-soft);border-radius:10px;border-top-color:transparent;margin-inline:-8px;padding-inline:8px}
+.now-tag{font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--brass-ink);background:var(--brass);border-radius:4px;padding:2px 6px}
+.ex{display:flex;gap:5px;margin-top:8px}
+.exc{width:40px;height:56px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  border-radius:5px;background:var(--card);color:var(--card-ink);border:1px solid var(--card-line);font:700 19px/1 var(--f-cond)}
+.exc i{font-style:normal;font-family:system-ui,-apple-system,'Segoe UI Symbol',sans-serif;font-size:17px;line-height:1}
+.exc.red{color:var(--card-red)}
+.exc.dim{opacity:.36}
+.ver{margin:0;text-align:center;font-size:12px;color:var(--muted);opacity:.7}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -197,7 +230,7 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
 
   <div class="controls">
     <button type="button" class="game-btn" id="openGames"><span class="k">Game</span><b id="gameName">Name the hand</b><span class="chev" aria-hidden="true">&#9662;</span></button>
-    <button type="button" class="ctl" id="openLadder">Ladder</button>
+    <button type="button" class="ctl hands-btn" id="openHands" aria-controls="drawer" aria-expanded="false">All hands</button>
     <button type="button" class="ctl" id="openStats">Stats</button>
   </div>
 
@@ -220,8 +253,18 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
     <div class="chips" id="chips"></div>
   </section>
 
-  <p class="hint">Keyboard: 1 to 9, 0 for 10 · Enter for next</p>
+  <p class="hint">Keyboard: 1 to 9, 0 for 10 · Enter for next · H for all hands</p>
+  <p class="ver">Version 3</p>
 </div>
+
+<div class="drawer-back" id="drawerBack"></div>
+<aside class="drawer" id="drawer" aria-labelledby="drawerTitle" aria-hidden="true" tabindex="-1" inert>
+  <div class="drawer-head">
+    <div><h2 id="drawerTitle">All hands</h2><p class="drawer-sub">1 strongest · 10 weakest</p></div>
+    <button type="button" class="x" id="drawerClose">Close</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
 
 <div class="sheet-back" id="sheetBack" hidden>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
@@ -238,17 +281,18 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
   const RL = r => r <= 10 ? String(r) : ({ 11: 'J', 12: 'Q', 13: 'K', 14: 'A' })[r];
   const RN = r => r <= 10 ? String(r) : ({ 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace' })[r];
 
+  // ex: [rank, suit] with suit 0 spades, 1 hearts, 2 diamonds, 3 clubs
   const HANDS = [
-    { pos: 1, name: 'Royal Flush', tip: 'A K Q J 10, all one suit.', ex: 'A0 K0 Q0 J0 10 0' },
-    { pos: 2, name: 'Straight Flush', tip: 'Five in a row, all one suit.', ex: '9 1 8 1 7 1 6 1 5 1' },
-    { pos: 3, name: 'Four of a Kind', tip: 'Four cards of the same rank.', ex: '7 3 7 2 7 1 7 0 K2' },
-    { pos: 4, name: 'Full House', tip: 'Three of a kind plus a pair.', ex: 'Q0 Q1 Q2 4 3 4 0' },
-    { pos: 5, name: 'Flush', tip: 'Five of one suit, not in a row.', ex: 'K2 10 2 8 2 5 2 2 2' },
-    { pos: 6, name: 'Straight', tip: 'Five in a row, mixed suits. Ace can be low: A 2 3 4 5.', ex: '8 3 7 2 6 0 5 1 4 3' },
-    { pos: 7, name: 'Three of a Kind', tip: 'Three cards of the same rank.', ex: 'J1 J3 J2 9 0 3 1' },
-    { pos: 8, name: 'Two Pair', tip: 'Two different pairs.', ex: '10 0 10 1 6 3 6 2 A0' },
-    { pos: 9, name: 'One Pair', tip: 'Two cards of the same rank.', ex: '5 1 5 3 K0 9 2 2 3' },
-    { pos: 10, name: 'High Card', tip: 'Nothing connects. The highest card plays.', ex: 'A2 J0 8 1 6 3 3 2' }
+    { pos: 1, name: 'Royal Flush', alias: '10 J Q K A, same suit', tip: 'A K Q J 10, all one suit.', ex: [[10, 0], [11, 0], [12, 0], [13, 0], [14, 0]] },
+    { pos: 2, name: 'Straight Flush', alias: 'In a row + same suit', tip: 'Five in a row, all one suit.', ex: [[5, 1], [6, 1], [7, 1], [8, 1], [9, 1]] },
+    { pos: 3, name: 'Four of a Kind', alias: 'Quads: four the same', tip: 'Four cards of the same rank.', ex: [[7, 3], [7, 2], [7, 1], [7, 0], [13, 2]] },
+    { pos: 4, name: 'Full House', alias: 'Triple + double', tip: 'Three of a kind plus a pair.', ex: [[12, 0], [12, 1], [12, 2], [4, 3], [4, 0]] },
+    { pos: 5, name: 'Flush', alias: 'Same suit, any order', tip: 'Five of one suit, not in a row.', ex: [[13, 2], [10, 2], [8, 2], [5, 2], [2, 2]] },
+    { pos: 6, name: 'Straight', alias: 'In a row, any suits (A 2 3 4 5 counts)', tip: 'Five in a row, mixed suits. Ace can be low: A 2 3 4 5.', ex: [[4, 3], [5, 1], [6, 0], [7, 2], [8, 3]] },
+    { pos: 7, name: 'Three of a Kind', alias: 'Triple: three the same', tip: 'Three cards of the same rank.', ex: [[11, 1], [11, 3], [11, 2], [9, 0], [3, 1]] },
+    { pos: 8, name: 'Two Pair', alias: 'Two doubles', tip: 'Two different pairs.', ex: [[10, 0], [10, 1], [6, 3], [6, 2], [14, 0]] },
+    { pos: 9, name: 'One Pair', alias: 'Double: two the same', tip: 'Two cards of the same rank.', ex: [[5, 1], [5, 3], [13, 0], [9, 2], [2, 3]] },
+    { pos: 10, name: 'High Card', alias: 'Nothing matches, top card plays', tip: 'Nothing connects. The highest card plays.', ex: [[14, 2], [11, 0], [8, 1], [6, 3], [3, 2]] }
   ];
   const H = p => HANDS[p - 1];
   const ALPHA = HANDS.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -606,8 +650,10 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
   els.next.addEventListener('click', newQuestion);
 
   document.addEventListener('keydown', e => {
+    if (drawer.classList.contains('open')) { if (e.key === 'Escape' || e.key === 'h' || e.key === 'H') closeDrawer(); return; }
     if (!els.sheetBack.hidden) { if (e.key === 'Escape') closeSheet(); return; }
     if (e.metaKey || e.ctrlKey || e.altKey || !q) return;
+    if (e.key === 'h' || e.key === 'H') { openDrawer(); return; }
     if (q.answered && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); newQuestion(); return; }
     if (q.answered) return;
     if (/^[0-9]$/.test(e.key) && !els.posWrap.hidden) { pickPos(e.key === '0' ? 10 : +e.key); return; }
@@ -619,20 +665,47 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
   });
 
   // ---------- sheets ----------
-  function miniHTML(ex) {
-    const toks = ex.match(/(10|[2-9AKQJ]) ?\d/g) || [];
-    return toks.map(t => {
-      const s = +t.slice(-1), r = t.slice(0, -1).trim();
-      return `<span class="mini${RED[s] ? ' red' : ''}">${r}<i>${SUITS[s]}</i></span>`;
-    }).join('');
+  // ---------- all-hands side panel ----------
+  const drawer = $('drawer'), drawerBack = $('drawerBack'), drawerBody = $('drawerBody'), handsBtn = $('openHands');
+  function exHTML(h) {
+    const cs = h.ex.map(([r, s]) => ({ r, s }));
+    const keys = keyIdx(cs, h.pos);
+    return cs.map((c, i) => `<span class="exc${RED[c.s] ? ' red' : ''}${keys.includes(i) ? '' : ' dim'}" role="img" aria-label="${RN(c.r)} of ${SUIT_N[c.s]}">${RL(c.r)}<i>${SUITS[c.s]}</i></span>`).join('');
   }
-  function ladderHTML() {
+  function drawerHTML(now) {
     const groups = [['Combos', [1, 2, 3, 4]], ['Patterns', [5, 6]], ['Matching cards', [7, 8, 9, 10]]];
     return groups.map(([g, ps]) => `<div class="grp">${g}</div>` + ps.map(p => {
-      const h = H(p);
-      return `<div class="row"><span class="chip sm">${p}</span><div><div class="row-name">${h.name}</div><div class="row-tip">${h.tip}</div><div class="minis">${miniHTML(h.ex)}</div></div></div>`;
-    }).join('')).join('') + `<p class="sum">Rule: the rarer the hand, the higher it ranks.</p>`;
+      const h = H(p), on = now.includes(p);
+      return `<div class="row hrow${on ? ' now' : ''}" id="hrow-${p}"><span class="chip sm">${p}</span><div><div class="hrow-top"><span class="row-name">${h.name}</span>${on ? '<span class="now-tag">This round</span>' : ''}</div><div class="alias">${h.alias}</div><div class="ex">${exHTML(h)}</div></div></div>`;
+    }).join('')).join('') + `<p class="sum">Rarer hand = higher position. Bright cards make the hand. Dim cards don't count.</p>`;
   }
+  function openDrawer() {
+    let now = [];
+    if (q && q.answered) now = q.type === 'versus' ? [q.pos, q.pos2] : [q.pos];
+    drawerBody.innerHTML = drawerHTML(now);
+    drawer.inert = false;
+    drawer.setAttribute('aria-hidden', 'false');
+    drawer.classList.add('open');
+    drawerBack.classList.add('open');
+    handsBtn.setAttribute('aria-expanded', 'true');
+    drawerBody.scrollTop = 0;
+    if (now.length) {
+      const r = $('hrow-' + Math.min(...now));
+      if (r) drawerBody.scrollTop = Math.max(0, r.offsetTop - drawerBody.clientHeight / 3);
+    }
+    try { drawer.focus({ preventScroll: true }); } catch (e) {}
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerBack.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
+    handsBtn.setAttribute('aria-expanded', 'false');
+    blurPickers();
+  }
+  handsBtn.addEventListener('click', () => drawer.classList.contains('open') ? closeDrawer() : openDrawer());
+  $('drawerClose').addEventListener('click', closeDrawer);
+  drawerBack.addEventListener('click', closeDrawer);
   function statsHTML() {
     const rows = HANDS.map(h => {
       const s = store.stats[h.pos];
@@ -651,8 +724,8 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
 
   let resetArm = null;
   function openSheet(kind) {
-    els.sheetTitle.textContent = kind === 'ladder' ? 'The ladder' : kind === 'games' ? 'Choose a game' : 'Your stats';
-    els.sheetBody.innerHTML = kind === 'ladder' ? ladderHTML() : kind === 'games' ? gamesHTML() : statsHTML();
+    els.sheetTitle.textContent = kind === 'games' ? 'Choose a game' : 'Your stats';
+    els.sheetBody.innerHTML = kind === 'games' ? gamesHTML() : statsHTML();
     els.sheetBack.hidden = false;
     els.sheet.scrollTop = 0;
     try { els.sheet.focus({ preventScroll: true }); } catch (e) {}
@@ -680,7 +753,6 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
     blurPickers();
   }
   $('openGames').addEventListener('click', () => openSheet('games'));
-  $('openLadder').addEventListener('click', () => openSheet('ladder'));
   $('openStats').addEventListener('click', () => openSheet('stats'));
   els.sheetClose.addEventListener('click', closeSheet);
   els.sheetBack.addEventListener('click', e => { if (e.target === els.sheetBack) closeSheet(); });
@@ -693,7 +765,16 @@ h1{margin:0;font-family:var(--f-cond);font-weight:700;font-size:30px;line-height
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloaded) return;
+    reloaded = true;
+    location.reload();
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
+  });
 }
 </script>
 </body>
