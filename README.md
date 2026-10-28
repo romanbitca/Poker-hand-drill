@@ -6,4 +6,4 @@ Games: Name the hand, Hold'em (5 table + 2 hole cards), Showdown (you vs opponen
 
 Install on iPhone: open the Pages URL in Safari, Share, Add to Home Screen. Open it once online, then it runs offline.
 
-To ship an update: edit `index.html` and bump `CACHE` in `sw.js` (for example `hand-drill-v5`), so installed copies pick up the new version.
+To ship an update: edit `index.html` and bump `CACHE` in `sw.js` (for example `hand-drill-v6`), so installed copies pick up the new version.
