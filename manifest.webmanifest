@@ -1,0 +1,14 @@
+{
+  "name": "Poker Hand Drill",
+  "short_name": "Hand Drill",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F2923",
+  "theme_color": "#16372F",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
