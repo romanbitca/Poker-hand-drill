@@ -69,7 +69,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .ctl.hands-btn{border-color:rgba(221,183,101,.6);color:var(--brass)}
 .game-btn{flex:1;min-width:0;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);background:var(--well);border-radius:12px;padding:9px 12px;cursor:pointer}
 .game-btn .k{font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted)}
-.game-btn b{flex:1;min-width:0;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-btn b{display:block;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .game-btn .chev{color:var(--brass);font-size:13px}
 .ctl{border:1px solid var(--line);background:var(--well);border-radius:12px;padding:9px 13px;font-weight:600;font-size:15px;cursor:pointer}
 
@@ -212,6 +212,49 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .ver{margin:0;text-align:center;font-size:12px;color:var(--muted);opacity:.7}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* v4: answer options, showdown seats, traps, difficulty */
+.game-btn{padding-block:6px}
+.gb{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.gb b{line-height:1.15}
+.game-btn .dlv{font-family:var(--f-cond);font-weight:600;font-size:12px;line-height:1.1;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.dirnote{margin:-8px 0 0;text-align:center;color:var(--muted);font-size:15px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;width:100%;max-width:440px;margin:0 auto}
+.opt{min-height:50px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--well);font-weight:600;font-size:16px;line-height:1.15;cursor:pointer}
+.opts.big .opt{min-height:88px;font-family:var(--f-cond);font-weight:700;font-size:22px}
+.opt.good{border-color:var(--good);background:var(--good-soft)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.opt.good::after{content:" \2713";color:var(--good)}
+.opt.bad::after{content:" \2715";color:var(--bad)}
+.seats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:440px;margin:4px auto 0}
+.seatbox{border:1px dashed var(--line);border-radius:12px;padding:6px 8px 8px}
+.seatbox .seat{margin:0 0 6px}
+.seatbox.win{border:1px solid var(--good);background:var(--good-soft)}
+.seatbox.lose{border:1px solid var(--bad);background:var(--bad-soft)}
+.seatbox.tie{border:1px solid var(--brass);background:var(--brass-soft)}
+.hand.duo{grid-template-columns:repeat(2,1fr);max-width:130px}
+.sd-res{display:flex;flex-direction:column;gap:12px;width:100%;max-width:440px;margin:4px auto 0;padding:10px 12px;border-radius:12px;background:var(--well);border:1px solid var(--line)}
+.sd-line{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sd-who{font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:13px;color:var(--muted);min-width:78px}
+.sd-hand{font-weight:600}
+.sd-tag{font-family:var(--f-cond);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.sd-tag.win{color:var(--good)}
+.sd-tag.lose{color:var(--bad)}
+.sd-tag.tie{color:var(--brass)}
+.sd-res .ex{margin-top:6px}
+.legend{margin:0;color:var(--muted);font-size:13px}
+.exc.mine{box-shadow:0 0 0 2px var(--brass)}
+.trap-tag{display:inline-block;margin-left:8px;vertical-align:2px;font-family:var(--f-cond);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--brass-ink);background:var(--brass);border-radius:4px;padding:2px 6px}
+.diffseg{display:flex;gap:3px;padding:3px;background:var(--well);border:1px solid var(--line);border-radius:12px}
+.diffseg button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px 6px;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer}
+.diffseg button[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink)}
+.diffnote{margin:6px 0 0;color:var(--muted);font-size:14px}
+.rules{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.rules li::marker{color:var(--brass)}
+.rules b{color:var(--brass);font-weight:600}
+@media (hover:hover) and (pointer:fine){
+  .opt:not(.good):not(.bad):hover{border-color:rgba(221,183,101,.6)}
+}
 </style>
 </head>
 <body>
@@ -229,7 +272,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </header>
 
   <div class="controls">
-    <button type="button" class="game-btn" id="openGames"><span class="k">Game</span><b id="gameName">Name the hand</b><span class="chev" aria-hidden="true">&#9662;</span></button>
+    <button type="button" class="game-btn" id="openGames" aria-label="Choose game and difficulty"><span class="gb"><b id="gameName">Name the hand</b><span class="dlv" id="diffName">Normal</span></span><span class="chev" aria-hidden="true">&#9662;</span></button>
     <button type="button" class="ctl hands-btn" id="openHands" aria-controls="drawer" aria-expanded="false">All hands</button>
     <button type="button" class="ctl" id="openStats">Stats</button>
   </div>
@@ -254,7 +297,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </section>
 
   <p class="hint">Keyboard: 1 to 9, 0 for 10 · Enter for next · H for all hands</p>
-  <p class="ver">Version 3</p>
+  <p class="ver">Version 4</p>
 </div>
 
 <div class="drawer-back" id="drawerBack"></div>
@@ -275,13 +318,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 <script>
 (() => {
+  // ================= cards and hands =================
   const SUITS = ['♠︎', '♥︎', '♦︎', '♣︎'];
   const SUIT_N = ['spades', 'hearts', 'diamonds', 'clubs'];
   const RED = [false, true, true, false];
   const RL = r => r <= 10 ? String(r) : ({ 11: 'J', 12: 'Q', 13: 'K', 14: 'A' })[r];
   const RN = r => r <= 10 ? String(r) : ({ 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace' })[r];
+  const RP = r => ({ 11: 'Jacks', 12: 'Queens', 13: 'Kings', 14: 'Aces' })[r] || r + 's';
 
-  // ex: [rank, suit] with suit 0 spades, 1 hearts, 2 diamonds, 3 clubs
+  // ex: [rank, suit], suit 0 spades, 1 hearts, 2 diamonds, 3 clubs
   const HANDS = [
     { pos: 1, name: 'Royal Flush', alias: '10 J Q K A, same suit', tip: 'A K Q J 10, all one suit.', ex: [[10, 0], [11, 0], [12, 0], [13, 0], [14, 0]] },
     { pos: 2, name: 'Straight Flush', alias: 'In a row + same suit', tip: 'Five in a row, all one suit.', ex: [[5, 1], [6, 1], [7, 1], [8, 1], [9, 1]] },
@@ -298,16 +343,28 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   const ALPHA = HANDS.slice().sort((a, b) => a.name.localeCompare(b.name));
 
   const GAMES = [
-    { id: 'mixed', name: 'Mixed', desc: 'All games shuffled together.' },
-    { id: 'cards', name: 'Name the hand', desc: '5 cards. Pick the hand and its position.' },
-    { id: 'holdem', name: "Hold'em", desc: '5 cards on the table, 2 in your hand. Find your best hand and its position.' },
-    { id: 'versus', name: 'Which wins', desc: 'Two hands side by side. Tap the stronger one.' },
+    { id: 'mixed', name: 'Mixed', desc: 'Every game below, shuffled together.' },
+    { id: 'cards', name: 'Name the hand', desc: '5 cards. Pick the hand and its position. Includes trap hands.' },
+    { id: 'holdem', name: "Hold'em: your hand", short: "Hold'em", desc: '5 on the table and 2 in your hand. Find your best hand and its position.' },
+    { id: 'showdown', name: 'Showdown', desc: 'Same table, you vs an opponent. Who wins, or is it a split pot?' },
+    { id: 'versus', name: 'Which wins', desc: 'Two 5-card hands. Includes same-type hands decided by kickers, and ties.' },
+    { id: 'order', name: 'Higher or lower', short: 'Higher/lower', desc: 'Hand names only. Which ranks higher, or what sits one step above or below.' },
     { id: 'pos2name', name: 'Position to hand', desc: 'You see a position number. Pick the hand.' },
     { id: 'name2pos', name: 'Hand to position', desc: 'You see a hand name. Pick its position.' }
   ];
   const G = id => GAMES.find(g => g.id === id) || GAMES[1];
+  const DIFFS = [
+    { id: 'easy', name: 'Easy', desc: 'Clean textbook hands. Different hand types in matchups.' },
+    { id: 'normal', name: 'Normal', desc: 'About half are traps, kicker battles or split pots.' },
+    { id: 'hard', name: 'Hard', desc: 'Mostly traps, close kicker battles and split pots.' }
+  ];
+  const D = id => DIFFS.find(d => d.id === id) || DIFFS[1];
+  const TRAP = { easy: { cards: 0, holdem: 0 }, normal: { cards: 0.45, holdem: 0.5 }, hard: { cards: 0.8, holdem: 0.85 } };
+  const VS_KIND = { easy: [0.85, 0.15, 0], normal: [0.45, 0.4, 0.15], hard: [0.2, 0.55, 0.25] };
+  const SD_KIND = { easy: [0.7, 0.27, 0.03], normal: [0.35, 0.45, 0.2], hard: [0.15, 0.6, 0.25] };
+  const ADJ = { easy: 0.15, normal: 0.45, hard: 0.75 };
 
-  // ---------- random + hand generation ----------
+  // ================= random helpers =================
   const R = n => Math.floor(Math.random() * n);
   const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = R(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const ALLR = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
@@ -315,72 +372,134 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   const suitsN = n => shuffle([0, 1, 2, 3]).slice(0, n);
   const seq = hi => hi === 5 ? [14, 2, 3, 4, 5] : [hi, hi - 1, hi - 2, hi - 3, hi - 4];
   const ck = c => c.r + '-' + c.s;
+  const C = (r, s) => ({ r, s });
+  const otherSuit = s => (s + 1 + R(3)) % 4;
+  const DECK = []; ALLR.forEach(r => [0, 1, 2, 3].forEach(s => DECK.push(C(r, s))));
+  const pickKind = w => { const x = Math.random(); return x < w[0] ? 'diff' : x < w[0] + w[1] ? 'same' : 'split'; };
+  const adjPos = p => p === 10 ? 9 : p === 1 ? 2 : p + (R(2) ? 1 : -1);
+  function filler(cards, ok = () => true) {
+    const used = new Set(cards.map(ck));
+    for (let i = 0; i < 400; i++) { const c = C(2 + R(13), R(4)); if (!used.has(ck(c)) && ok(c)) return c; }
+    return C(2, 0);
+  }
 
-  const GEN = {
-    1: () => { const s = R(4); return [14, 13, 12, 11, 10].map(r => ({ r, s })); },
-    2: () => { const s = R(4); return seq(5 + R(9)).map(r => ({ r, s })); },
-    3: () => { const [r, k] = ranksN(2); return [0, 1, 2, 3].map(s => ({ r, s })).concat({ r: k, s: R(4) }); },
-    4: () => { const [a, b] = ranksN(2); return suitsN(3).map(s => ({ r: a, s })).concat(suitsN(2).map(s => ({ r: b, s }))); },
-    5: () => { const s = R(4); return ranksN(5).map(r => ({ r, s })); },
-    6: () => seq(5 + R(10)).map(r => ({ r, s: R(4) })),
-    7: () => { const [r, k1, k2] = ranksN(3); return suitsN(3).map(s => ({ r, s })).concat([{ r: k1, s: R(4) }, { r: k2, s: R(4) }]); },
-    8: () => { const [a, b, k] = ranksN(3); return suitsN(2).map(s => ({ r: a, s })).concat(suitsN(2).map(s => ({ r: b, s })), [{ r: k, s: R(4) }]); },
-    9: () => { const [p, ...ks] = ranksN(4); return suitsN(2).map(s => ({ r: p, s })).concat(ks.map(r => ({ r, s: R(4) }))); },
-    10: () => ranksN(5).map(r => ({ r, s: R(4) }))
-  };
-
-  function evaluate(cs) {
-    const rs = cs.map(c => c.r).sort((a, b) => a - b);
+  // ================= scoring =================
+  // score5 -> [position, ...tiebreak ranks]; lower position wins, then higher tiebreaks
+  function score5(cs) {
+    const rs = cs.map(c => c.r).sort((a, b) => b - a);
     const flush = cs.every(c => c.s === cs[0].s);
-    let straight = false;
+    let sHigh = 0;
     if (new Set(rs).size === 5) {
-      if (rs[4] - rs[0] === 4) straight = true;
-      else if (rs.join() === '2,3,4,5,14') straight = true;
+      if (rs[0] - rs[4] === 4) sHigh = rs[0];
+      else if (rs.join() === '14,5,4,3,2') sHigh = 5;
     }
     const cnt = {}; rs.forEach(r => cnt[r] = (cnt[r] || 0) + 1);
-    const shape = Object.values(cnt).sort((a, b) => b - a).join('');
-    if (straight && flush) return rs[0] === 10 ? 1 : 2;
-    if (shape === '41') return 3;
-    if (shape === '32') return 4;
-    if (flush) return 5;
-    if (straight) return 6;
-    if (shape === '311') return 7;
-    if (shape === '221') return 8;
-    if (shape === '2111') return 9;
-    return 10;
+    const grp = Object.keys(cnt).map(Number).sort((a, b) => cnt[b] - cnt[a] || b - a);
+    const shape = grp.map(r => cnt[r]).join('');
+    if (sHigh && flush) return [sHigh === 14 ? 1 : 2, sHigh];
+    if (shape === '41') return [3, ...grp];
+    if (shape === '32') return [4, ...grp];
+    if (flush) return [5, ...rs];
+    if (sHigh) return [6, sHigh];
+    if (shape === '311') return [7, ...grp];
+    if (shape === '221') return [8, ...grp];
+    if (shape === '2111') return [9, ...grp];
+    return [10, ...rs];
   }
-
-  // best hand from any number of cards (5 to 7)
-  function best(cs) {
-    if (cs.length === 5) return evaluate(cs);
-    let b = 10;
-    const n = cs.length;
-    for (let a = 0; a < n; a++) for (let c = a + 1; c < n; c++) {
-      const five = cs.filter((_, i) => i !== a && i !== c);
-      if (n === 7) b = Math.min(b, evaluate(five));
+  function cmp(a, b) {
+    if (a[0] !== b[0]) return b[0] - a[0];
+    for (let i = 1; i < Math.max(a.length, b.length); i++) if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) - (b[i] || 0);
+    return 0;
+  }
+  const evaluate = cs => score5(cs)[0];
+  const COMBOS = {};
+  function combos(n) {
+    if (COMBOS[n]) return COMBOS[n];
+    const out = [];
+    const rec = (st, acc) => { if (acc.length === 5) { out.push(acc.slice()); return; } for (let i = st; i < n; i++) { acc.push(i); rec(i + 1, acc); acc.pop(); } };
+    rec(0, []);
+    return (COMBOS[n] = out);
+  }
+  function bestOf(cs) {
+    let bs = null, bi = null;
+    for (const idx of combos(cs.length)) {
+      const sc = score5(idx.map(i => cs[i]));
+      if (!bs || cmp(sc, bs) > 0) { bs = sc; bi = idx; }
     }
-    return b;
+    return { score: bs, idx: bi };
+  }
+  const best = cs => bestOf(cs).score[0];
+
+  function describe(sc) {
+    const [cat, a, b] = sc;
+    switch (cat) {
+      case 1: return 'Royal Flush';
+      case 2: return `Straight Flush, ${RN(a)} high`;
+      case 3: return `Four ${RP(a)}`;
+      case 4: return `Full House, ${RP(a)} full of ${RP(b)}`;
+      case 5: return `Flush, ${RN(a)} high`;
+      case 6: return `Straight, ${RN(a)} high`;
+      case 7: return `Three ${RP(a)}`;
+      case 8: return `Two Pair, ${RP(a)} and ${RP(b)}`;
+      case 9: return `Pair of ${RP(a)}`;
+      default: return `High Card, ${RN(a)}`;
+    }
+  }
+  const ORD = ['', '1st', '2nd', '3rd', '4th', '5th'];
+  // w is the better (or equal) score
+  function whyWins(w, l) {
+    if (w[0] !== l[0]) return `${H(w[0]).name} (#${w[0]}) beats ${H(l[0]).name} (#${l[0]}).`;
+    const cat = w[0], nm = H(cat).name;
+    let i = 1; while (i < w.length && w[i] === l[i]) i++;
+    if (i >= w.length) return `Both have ${describe(w)}${[2, 6, 1].includes(cat) ? '' : ', with the same side cards'}. Suits never break ties, so the pot is split.`;
+    const a = w[i], b = l[i];
+    switch (cat) {
+      case 2: case 6: return `Both ${nm}. ${RN(a)}-high beats ${RN(b)}-high.` + (b === 5 ? ' A 2 3 4 5 is the lowest straight.' : '');
+      case 3: return i === 1 ? `Both Four of a Kind. Four ${RP(a)} beat four ${RP(b)}.` : `Same four ${RP(w[1])}. Kicker ${RN(a)} beats ${RN(b)}.`;
+      case 4: return i === 1 ? `Both Full House. The triple decides first: ${RP(a)} full beats ${RP(b)} full.` : `Same triple. Pair of ${RP(a)} beats pair of ${RP(b)}.`;
+      case 7: return i === 1 ? `Both Three of a Kind. Three ${RP(a)} beat three ${RP(b)}.` : `Same three ${RP(w[1])}. ${i === 2 ? 'Kicker' : 'Next kicker'} ${RN(a)} beats ${RN(b)}.`;
+      case 8: return i === 1 ? `Both Two Pair. Top pair ${RP(a)} beats ${RP(b)}.` : i === 2 ? `Same top pair (${RP(w[1])}). Second pair ${RP(a)} beats ${RP(b)}.` : `Same two pairs. Kicker ${RN(a)} beats ${RN(b)}.`;
+      case 9: return i === 1 ? `Both One Pair. ${RP(a)} beat ${RP(b)}.` : `Same pair of ${RP(w[1])}. ${i === 2 ? 'Kicker' : 'Next kicker'} ${RN(a)} beats ${RN(b)}.`;
+      default: return i === 1 ? `Both ${nm}. Top card ${RN(a)} beats ${RN(b)}.` : `Both ${nm}. Equal down to the ${ORD[i]} card: ${RN(a)} beats ${RN(b)}.`;
+    }
+  }
+  const whyText = (sa, sb) => cmp(sa, sb) >= 0 ? whyWins(sa, sb) : whyWins(sb, sa);
+  function sortFive(cs, sc) {
+    const cnt = {}; cs.forEach(c => cnt[c.r] = (cnt[c.r] || 0) + 1);
+    const wheel = (sc[0] === 2 || sc[0] === 6) && sc[1] === 5;
+    const v = r => wheel && r === 14 ? 1 : r;
+    return cs.slice().sort((a, b) => (cnt[b.r] - cnt[a.r]) || (v(b.r) - v(a.r)));
   }
 
+  // ================= clean generators =================
+  const GEN = {
+    1: () => { const s = R(4); return [14, 13, 12, 11, 10].map(r => C(r, s)); },
+    2: () => { const s = R(4); return seq(5 + R(9)).map(r => C(r, s)); },
+    3: () => { const [r, k] = ranksN(2); return [0, 1, 2, 3].map(s => C(r, s)).concat(C(k, R(4))); },
+    4: () => { const [a, b] = ranksN(2); return suitsN(3).map(s => C(a, s)).concat(suitsN(2).map(s => C(b, s))); },
+    5: () => { const s = R(4); return ranksN(5).map(r => C(r, s)); },
+    6: () => seq(5 + R(10)).map(r => C(r, R(4))),
+    7: () => { const [r, k1, k2] = ranksN(3); return suitsN(3).map(s => C(r, s)).concat([C(k1, R(4)), C(k2, R(4))]); },
+    8: () => { const [a, b, k] = ranksN(3); return suitsN(2).map(s => C(a, s)).concat(suitsN(2).map(s => C(b, s)), [C(k, R(4))]); },
+    9: () => { const [p, ...ks] = ranksN(4); return suitsN(2).map(s => C(p, s)).concat(ks.map(r => C(r, R(4)))); },
+    10: () => ranksN(5).map(r => C(r, R(4)))
+  };
   function makeHand(pos) {
     for (let i = 0; i < 500; i++) { const h = GEN[pos](); if (evaluate(h) === pos) return shuffle(h); }
     return shuffle(GEN[1]());
   }
-
   function makeHoldem(pos) {
     for (let i = 0; i < 4000; i++) {
       const five = GEN[pos]();
       if (evaluate(five) !== pos) continue;
-      const used = new Set(five.map(ck));
-      const extra = [];
-      while (extra.length < 2) { const c = { r: 2 + R(13), s: R(4) }; if (!used.has(ck(c))) { used.add(ck(c)); extra.push(c); } }
+      const extra = [filler(five)]; extra.push(filler(five.concat(extra)));
       const seven = shuffle(five.concat(extra));
-      if (best(seven) === pos) return { board: seven.slice(0, 5), hole: seven.slice(5) };
+      if (best(seven) === pos) return seven;
     }
-    const f = makeHand(1); return { board: f, hole: [{ r: 2, s: (f[0].s + 1) % 4 }, { r: 3, s: (f[0].s + 1) % 4 }] };
+    const f = GEN[1](); return f.concat([C(2, (f[0].s + 1) % 4), C(3, (f[0].s + 1) % 4)]);
   }
 
-  // indices of the cards that make the hand (works for 5 or 7 cards)
+  // indices of the cards that make the hand (5 or 7 cards)
   function keyIdx(cs, pos) {
     const idx = cs.map((_, i) => i);
     const cnt = {}; cs.forEach(c => cnt[c.r] = (cnt[c.r] || 0) + 1);
@@ -416,16 +535,144 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     }
   }
 
-  // ---------- storage ----------
+  // ================= trap hands =================
+  const gapRanks = () => { const lo = 2 + R(8); const six = [lo, lo + 1, lo + 2, lo + 3, lo + 4, lo + 5]; six.splice(1 + R(4), 1); return six; };
+  const T5 = [
+    { exp: [10], note: 'Wrap-arounds like Q K A 2 3 are not straights. The Ace links only 10 J Q K A or A 2 3 4 5.', make: () => [[11, 12, 13, 14, 2], [12, 13, 14, 2, 3], [13, 14, 2, 3, 4]][R(3)].map(r => C(r, R(4))) },
+    { exp: [6], note: 'A 2 3 4 5 is a Straight. The Ace can play low.', make: () => [14, 2, 3, 4, 5].map(r => C(r, R(4))) },
+    { exp: [6], note: '10 J Q K A in mixed suits is only a Straight. Royal Flush needs one suit.', make: () => [10, 11, 12, 13, 14].map(r => C(r, R(4))) },
+    { exp: [10], note: 'Four of one suit is not a Flush. All five must match.', make: () => { const s = R(4); return ranksN(5).map((r, i) => C(r, i < 4 ? s : otherSuit(s))); } },
+    { exp: [10], note: 'One gap breaks a Straight. All five must be in a row.', make: () => gapRanks().map(r => C(r, R(4))) },
+    { exp: [5], note: 'One suit but one gap: Flush, not Straight Flush.', make: () => { const s = R(4); return gapRanks().map(r => C(r, s)); } },
+    { exp: [2], note: 'A 2 3 4 5 in one suit is a Straight Flush. Royal is only 10 J Q K A.', make: () => { const s = R(4); return [14, 2, 3, 4, 5].map(r => C(r, s)); } },
+    { exp: [2], note: '9 to K in one suit is a Straight Flush. A Royal Flush must reach the Ace.', make: () => { const s = R(4); return [9, 10, 11, 12, 13].map(r => C(r, s)); } },
+    { exp: [6], note: 'Five in a row with one off-suit card: Straight, not Straight Flush.', make: () => { const s = R(4), off = R(5); return seq(5 + R(10)).map((r, i) => C(r, i === off ? otherSuit(s) : s)); } },
+    { exp: [9], note: 'Four in a row plus a pair is only One Pair.', make: () => { const lo = 2 + R(10); const rs = [lo, lo + 1, lo + 2, lo + 3]; return rs.concat(rs[R(4)]).map(r => C(r, R(4))); } },
+    { exp: [9], note: 'Four suited cards plus a pair: One Pair. A Flush needs five suited.', make: () => { const s = R(4); const [p, a, b, c] = ranksN(4); return [C(p, s), C(p, otherSuit(s)), C(a, s), C(b, s), C(c, s)]; } },
+    { exp: [7], note: 'A triple plus two different cards is Three of a Kind. A Full House needs those two to pair.', make: () => { const [t, a, b] = ranksN(3); return suitsN(3).map(s => C(t, s)).concat([C(a, R(4)), C(b, R(4))]); } },
+    { exp: [10], note: 'A K Q J 9 misses the 10. Close to a Straight, but only High Card.', make: () => [14, 13, 12, 11, 9].map(r => C(r, R(4))) }
+  ];
+  // 7-card traps: indices 0-4 are the table, 5-6 are your cards
+  const T7 = [
+    { exp: [6], note: 'The Straight is all on the table. It still counts as your hand.',
+      check: cs => keyIdx(cs, 6).every(i => i < 5),
+      make: () => { const hi = 6 + R(8); const board = seq(hi).map(r => C(r, R(4))); const h1 = filler(board, c => c.r !== hi + 1); const h2 = filler(board.concat(h1), c => c.r !== hi + 1); return board.concat([h1, h2]); } },
+    { exp: [8], note: cs => `Your pair of ${RP(cs[5].r)} does not play. The two higher pairs on the table make your Two Pair.`,
+      check: cs => keyIdx(cs, 8).every(i => i < 5) && bestOf(cs).idx.every(i => i < 5),
+      make: () => { const rs4 = ranksN(4).sort((x, y) => y - x); const c = rs4[3]; const [a, b, k] = shuffle(rs4.slice(0, 3)); const [s1, s2] = suitsN(2), [s3, s4] = suitsN(2), [s5, s6] = suitsN(2); return [C(a, s1), C(a, s2), C(b, s3), C(b, s4), C(k, R(4)), C(c, s5), C(c, s6)]; } },
+    { exp: [8], note: 'Three pairs is still Two Pair. Only the top two pairs play.',
+      make: () => { const [a, b, c, k] = ranksN(4); const [s1, s2] = suitsN(2), [s3, s4] = suitsN(2), [s5, s6] = suitsN(2); return shuffle([C(a, s1), C(a, s2), C(b, s3), C(b, s4), C(c, s5), C(c, s6), C(k, R(4))]); } },
+    { exp: [4], note: 'Two triples make a Full House: the higher triple plus two from the other.',
+      make: () => { const [t1, t2] = ranksN(2); const x = ranksN(1, [t1, t2])[0]; const sa = suitsN(3), sb = suitsN(3); return [C(t1, sa[0]), C(t1, sa[1]), C(t2, sb[0]), C(t2, sb[1]), C(x, R(4)), C(t1, sa[2]), C(t2, sb[2])]; } },
+    { exp: [5], note: 'Four suited on the table plus one of yours makes a Flush.',
+      check: cs => keyIdx(cs, 5).some(i => i >= 5),
+      make: () => { const s = R(4); const rs = ranksN(5); const board = rs.slice(0, 4).map(r => C(r, s)); board.push(filler(board, c => c.s !== s)); const h1 = C(rs[4], s); return board.concat([h1, filler(board.concat(h1))]); } },
+    { exp: [7, 8, 9, 10], note: 'Four of a suit on the table is not a Flush. You need a fifth card of that suit.',
+      make: () => { const s = R(4); const board = ranksN(4).map(r => C(r, s)); board.push(filler(board, c => c.s !== s)); const h1 = filler(board, c => c.s !== s); return board.concat([h1, filler(board.concat(h1), c => c.s !== s)]); } },
+    { exp: [7], note: 'Your card plus the pair on the table makes Three of a Kind.',
+      check: cs => keyIdx(cs, 7).some(i => i >= 5),
+      make: () => { const [p, x, y, z, w] = ranksN(5); const ss = suitsN(3); return [C(p, ss[0]), C(p, ss[1]), C(x, R(4)), C(y, R(4)), C(z, R(4)), C(p, ss[2]), C(w, R(4))]; } },
+    { exp: [6], note: 'Both your cards fill the middle of the Straight.',
+      check: cs => { const k = keyIdx(cs, 6); return k.includes(5) && k.includes(6); },
+      make: () => { const hi = 6 + R(9); const rs = seq(hi); const mid = shuffle([1, 2, 3]).slice(0, 2); const hole = mid.map(i => C(rs[i], R(4))); const board = rs.filter((_, i) => !mid.includes(i)).map(r => C(r, R(4))); const ok = c => c.r !== hi + 1 && !rs.includes(c.r); board.push(filler(board.concat(hole), ok)); board.push(filler(board.concat(hole), ok)); return shuffle(board).concat(hole); } },
+    { exp: [6], note: 'Six in a row is still one Straight. The top five cards play.',
+      make: () => { const lo = 2 + R(8); const six = [0, 1, 2, 3, 4, 5].map(i => C(lo + i, R(4))); return shuffle(six.concat(filler(six, c => c.r !== lo + 6 && c.r !== lo - 1))); } },
+    { exp: [5], note: 'You have a Straight and a Flush, but not in the same five cards. Flush ranks higher.',
+      make: () => { const s = R(4); const hi = 6 + R(9); const rs = seq(hi); const suited = shuffle([0, 1, 2, 3, 4]).slice(0, 3); const st = rs.map((r, i) => C(r, suited.includes(i) ? s : otherSuit(s))); const ex = ranksN(2, rs.concat([hi + 1, hi - 5])).map(r => C(r, s)); return shuffle(st.concat(ex)); } },
+    { exp: [9], note: 'The pair on the table counts for you too. Your cards are only side cards.',
+      check: cs => keyIdx(cs, 9).every(i => i < 5),
+      make: () => { const [p, x, y, z, a, b] = ranksN(6); const ss = suitsN(2); return [C(p, ss[0]), C(p, ss[1]), C(x, R(4)), C(y, R(4)), C(z, R(4)), C(a, R(4)), C(b, R(4))]; } },
+    { exp: [4], note: 'Three of a kind on the table plus your pair makes a Full House.',
+      make: () => { const [t, p, x, y] = ranksN(4); const ts = suitsN(3), ps = suitsN(2); return [C(t, ts[0]), C(t, ts[1]), C(t, ts[2]), C(x, R(4)), C(y, R(4)), C(p, ps[0]), C(p, ps[1])]; } },
+    { exp: [6], note: 'Your Ace plays low: A 2 3 4 5 is a Straight.',
+      check: cs => keyIdx(cs, 6).some(i => i >= 5 && cs[i].r === 14),
+      make: () => { const board = [2, 3, 4].map(r => C(r, R(4))); const ok = c => ![5, 6, 14].includes(c.r); board.push(filler(board, ok)); board.push(filler(board, ok)); return shuffle(board).concat([C(14, R(4)), C(5, R(4))]); } },
+    { exp: [3], note: 'Your pair plus the same pair on the table: Four of a Kind.',
+      make: () => { const [p, x, y, z] = ranksN(4); const ss = shuffle([0, 1, 2, 3]); return [C(p, ss[0]), C(p, ss[1]), C(x, R(4)), C(y, R(4)), C(z, R(4)), C(p, ss[2]), C(p, ss[3])]; } },
+    { exp: [5], note: 'All five table cards share a suit, so everyone has at least that Flush.',
+      make: () => { const s = R(4); const board = ranksN(5).map(r => C(r, s)); const h1 = filler(board); return board.concat([h1, filler(board.concat(h1))]); } }
+  ];
+  function runTemplate(t) {
+    for (let i = 0; i < 400; i++) {
+      const cs = t.make();
+      if (new Set(cs.map(ck)).size !== cs.length) continue;
+      const p = cs.length === 5 ? evaluate(cs) : best(cs);
+      if (!t.exp.includes(p)) continue;
+      if (t.check && !t.check(cs)) continue;
+      return { cards: cs, pos: p, note: typeof t.note === 'function' ? t.note(cs) : t.note };
+    }
+    return null;
+  }
+  const lastTemplate = new Map();
+  function pickTemplate(list) {
+    for (let k = 0; k < 8; k++) {
+      let i; do { i = R(list.length); } while (list.length > 1 && i === lastTemplate.get(list));
+      const res = runTemplate(list[i]);
+      if (res) { lastTemplate.set(list, i); return res; }
+    }
+    return null;
+  }
+
+  // ================= matchups =================
+  const disjoint = (a, b) => { const s = new Set(a.map(ck)); return b.every(c => !s.has(ck(c))); };
+  function makeVersus(kind, d) {
+    if (kind === 'same') {
+      const cat = [2, 3, 4, 5, 6, 7, 8, 9, 10][R(9)];
+      const close = [5, 8, 9, 10].includes(cat) && Math.random() < (d === 'hard' ? 0.75 : 0.5);
+      for (let t = 0; t < 4000; t++) {
+        const a = makeHand(cat), b = makeHand(cat);
+        if (!disjoint(a, b)) continue;
+        const sa = score5(a), sb = score5(b);
+        if (cmp(sa, sb) === 0) continue;
+        if (close && sa[1] !== sb[1]) continue;
+        return [a, b];
+      }
+    }
+    if (kind === 'split') {
+      const cat = [1, 2, 5, 6, 6, 8, 9, 9, 10, 10][R(10)];
+      for (let t = 0; t < 4000; t++) {
+        const a = makeHand(cat);
+        const suited = cat <= 2 || cat === 5;
+        const s2 = otherSuit(a[0].s);
+        const b = a.map(c => C(c.r, suited ? s2 : R(4)));
+        if (!disjoint(a, b) || new Set(b.map(ck)).size !== 5) continue;
+        if (cmp(score5(a), score5(b)) !== 0) continue;
+        return [a, shuffle(b)];
+      }
+    }
+    const p1 = weightedPos();
+    let p2;
+    if (Math.random() < ADJ[d]) p2 = adjPos(p1); else do { p2 = 1 + R(10); } while (p2 === p1);
+    const a = makeHand(p1);
+    let b = makeHand(p2);
+    for (let i = 0; i < 300 && !disjoint(a, b); i++) b = makeHand(p2);
+    return [a, b];
+  }
+  function makeShowdown(kind) {
+    for (let t = 0; t < 3000; t++) {
+      const dk = shuffle(DECK.slice());
+      const board = dk.slice(0, 5), you = dk.slice(5, 7), opp = dk.slice(7, 9);
+      const a = bestOf(board.concat(you)), b = bestOf(board.concat(opp));
+      const c = cmp(a.score, b.score);
+      const k = c === 0 ? 'split' : a.score[0] === b.score[0] ? 'same' : 'diff';
+      if (k !== kind) continue;
+      if (k !== 'split' && a.score[0] === 10 && b.score[0] === 10 && R(4)) continue;
+      return { board, you, opp, a, b, c };
+    }
+    return kind === 'diff' ? null : makeShowdown('diff');
+  }
+
+  // ================= storage =================
   const KEY = 'poker-hand-drill-v1';
-  let store = { stats: {}, best: 0, answered: 0, game: null };
+  let store = { stats: {}, best: 0, answered: 0, game: null, diff: 'normal' };
   try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && typeof s === 'object') store = Object.assign(store, s); } catch (e) {}
   if (!store.game) store.game = store.mode === 'mixed' ? 'mixed' : 'cards';
   if (!GAMES.some(g => g.id === store.game)) store.game = 'cards';
+  if (!DIFFS.some(d => d.id === store.diff)) store.diff = 'normal';
   for (let p = 1; p <= 10; p++) if (!store.stats[p]) store.stats[p] = { n: 0, miss: 0 };
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
 
-  // Hands you miss come up more often
+  // hands you miss come up more often
   function weightedPos(avoid) {
     const w = []; let sum = 0;
     for (let p = 1; p <= 10; p++) {
@@ -439,22 +686,21 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     return 10;
   }
 
-  // ---------- elements ----------
+  // ================= elements =================
   const $ = id => document.getElementById(id);
   const els = {
     play: $('play'), prompt: $('prompt'), stage: $('stage'), fb: $('fb'), fbL1: $('fbL1'), fbL2: $('fbL2'), next: $('next'),
-    namesWrap: $('namesWrap'), names: $('names'), posWrap: $('posWrap'), chips: $('chips'), gameName: $('gameName'),
+    namesWrap: $('namesWrap'), names: $('names'), posWrap: $('posWrap'), chips: $('chips'), gameName: $('gameName'), diffName: $('diffName'),
     tStreak: $('tStreak'), tScore: $('tScore'), tBest: $('tBest'),
     sheetBack: $('sheetBack'), sheet: $('sheet'), sheetTitle: $('sheetTitle'), sheetBody: $('sheetBody'), sheetClose: $('sheetClose')
   };
-
   els.names.innerHTML = ALPHA.map(h => `<button type="button" class="nm" id="nm-${h.pos}" data-p="${h.pos}" aria-pressed="false">${h.name}</button>`).join('');
   els.chips.innerHTML = Array.from({ length: 10 }, (_, i) => `<button type="button" class="chip" id="chip-${i + 1}" data-p="${i + 1}" aria-label="Position ${i + 1}" aria-pressed="false">${i + 1}</button>`).join('');
   const nameBtns = [...els.names.querySelectorAll('.nm')];
   const chipBtns = [...els.chips.querySelectorAll('.chip')];
 
-  // ---------- state ----------
   let q = null, last = 0;
+  const recentKeys = [];
   const session = { streak: 0, right: 0, total: 0 };
   const reduceMotion = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
 
@@ -463,15 +709,67 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     return `<span class="card${RED[c.s] ? ' red' : ''}" style="--i:${i}" role="img" aria-label="${RN(c.r)} of ${SUIT_N[c.s]}"><span class="idx">${r}<i>${s}</i></span><span class="pip">${s}</span></span>`;
   };
   const handHTML = (cs, cls = '', off = 0) => `<span class="hand ${cls}">${cs.map((c, i) => cardHTML(c, i + off)).join('')}</span>`;
+  const miniHTML = (c, extra = '') => `<span class="exc${RED[c.s] ? ' red' : ''}${extra}" role="img" aria-label="${RN(c.r)} of ${SUIT_N[c.s]}">${RL(c.r)}<i>${SUITS[c.s]}</i></span>`;
+  const optHTML = o => `<button type="button" class="opt" data-id="${o.id}">${o.label}</button>`;
 
+  // ================= questions =================
   function pickType() {
     if (store.game !== 'mixed') return store.game;
-    const r = Math.random();
-    if (r < 0.28) return 'cards';
-    if (r < 0.56) return 'holdem';
-    if (r < 0.72) return 'versus';
-    if (r < 0.86) return 'pos2name';
+    const x = Math.random();
+    if (x < 0.2) return 'cards';
+    if (x < 0.42) return 'holdem';
+    if (x < 0.62) return 'showdown';
+    if (x < 0.76) return 'versus';
+    if (x < 0.86) return 'order';
+    if (x < 0.93) return 'pos2name';
     return 'name2pos';
+  }
+
+  function build(type) {
+    const d = store.diff;
+    if (type === 'cards') {
+      let cards = null, trap = null;
+      if (Math.random() < TRAP[d].cards) { const t = pickTemplate(T5); if (t) { cards = shuffle(t.cards); trap = t.note; } }
+      if (!cards) cards = makeHand(weightedPos(last));
+      const sc = score5(cards), p = sc[0];
+      return { type, kind: 'pick', needName: true, needPos: true, ansName: p, ansPos: p, pos: p, cards, score: sc, trap, involved: [p] };
+    }
+    if (type === 'holdem') {
+      let cs = null, trap = null;
+      if (Math.random() < TRAP[d].holdem) { const t = pickTemplate(T7); if (t) { cs = t.cards; trap = t.note; } }
+      if (!cs) cs = makeHoldem(weightedPos(last));
+      const board = shuffle(cs.slice(0, 5)), hole = shuffle(cs.slice(5));
+      const cards = board.concat(hole);
+      const sc = bestOf(cards).score, p = sc[0];
+      return { type, kind: 'pick', needName: true, needPos: true, ansName: p, ansPos: p, pos: p, cards, board, hole, score: sc, trap, involved: [p] };
+    }
+    if (type === 'showdown') {
+      const sd = makeShowdown(pickKind(SD_KIND[d]));
+      const ans = sd.c > 0 ? 'you' : sd.c < 0 ? 'opp' : 'split';
+      return { type, kind: 'opt', ...sd, ans, opts: [{ id: 'you', label: 'You win' }, { id: 'opp', label: 'Opponent wins' }, { id: 'split', label: 'Split pot' }], involved: [sd.a.score[0], sd.b.score[0]] };
+    }
+    if (type === 'versus') {
+      let [a, b] = makeVersus(pickKind(VS_KIND[d]), d);
+      if (R(2)) [a, b] = [b, a];
+      const sa = score5(a), sb = score5(b), c = cmp(sa, sb);
+      return { type, kind: 'opt', cards: a, cards2: b, sa, sb, ans: c > 0 ? 'a' : c < 0 ? 'b' : 't', opts: [{ id: 'a', label: 'Hand A' }, { id: 'b', label: 'Hand B' }, { id: 't', label: 'Split pot (tie)' }], involved: [sa[0], sb[0]] };
+    }
+    if (type === 'order') {
+      const x = Math.random();
+      if (x < 0.5) {
+        const p1 = weightedPos();
+        const p2 = Math.random() < ADJ[d] ? adjPos(p1) : (() => { let v; do { v = 1 + R(10); } while (v === p1); return v; })();
+        const opts = shuffle([{ id: String(p1), label: H(p1).name }, { id: String(p2), label: H(p2).name }]);
+        return { type: 'hl', kind: 'opt', p1, p2, opts, ans: String(Math.min(p1, p2)), key: 'hl' + Math.min(p1, p2) + '-' + Math.max(p1, p2), involved: [p1, p2] };
+      }
+      const above = x < 0.75;
+      let t; do { t = weightedPos(); } while (above ? t === 1 : t === 10);
+      const a = above ? t - 1 : t + 1;
+      return { type: above ? 'above' : 'below', kind: 'pick', needName: true, needPos: false, ansName: a, target: t, key: (above ? 'ab' : 'be') + t, involved: [t, a] };
+    }
+    const p = weightedPos(last);
+    if (type === 'pos2name') return { type, kind: 'pick', needName: true, needPos: false, ansName: p, pos: p, key: 'pn' + p, involved: [p] };
+    return { type: 'name2pos', kind: 'pick', needName: false, needPos: true, ansPos: p, pos: p, key: 'np' + p, involved: [p] };
   }
 
   function blurPickers() {
@@ -482,15 +780,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   function newQuestion() {
     blurPickers();
     const type = pickType();
-    const pos = weightedPos(last);
-    q = { type, pos, selName: null, selPos: null, answered: false };
-    if (type === 'cards') q.cards = makeHand(pos);
-    if (type === 'holdem') { const h = makeHoldem(pos); q.board = h.board; q.hole = h.hole; q.cards = h.board.concat(h.hole); }
-    if (type === 'versus') {
-      let p2; do { p2 = weightedPos(); } while (p2 === pos);
-      q.pos2 = p2; q.cards = makeHand(pos); q.cards2 = makeHand(p2);
-    }
-    last = pos;
+    let nq = build(type);
+    for (let i = 0; i < 12 && nq.key && recentKeys.includes(nq.key); i++) nq = build(type);
+    if (nq.key) { recentKeys.push(nq.key); if (recentKeys.length > 5) recentKeys.shift(); }
+    q = Object.assign(nq, { selName: null, selPos: null, answered: false });
+    if (q.pos) last = q.pos;
     render();
     const r = els.play.getBoundingClientRect();
     if (r.top < 0) els.play.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -499,33 +793,48 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   const PROMPTS = {
     cards: 'Name the hand and its position',
     holdem: 'What is your best hand?',
+    showdown: 'Who wins this hand?',
+    versus: 'Which hand wins?',
+    hl: 'Which ranks higher?',
+    above: 'Which hand is one step stronger?',
+    below: 'Which hand is one step weaker?',
     pos2name: 'Which hand is at this position?',
-    name2pos: 'What position is this hand?',
-    versus: 'Which hand wins?'
+    name2pos: 'What position is this hand?'
   };
   const HINTS = {
     cards: 'Pick the hand name, then its position.',
     holdem: 'Use any 5 of the 7 cards. Pick the hand, then its position.',
+    showdown: 'Both players use the same 5 table cards plus their own 2.',
+    versus: 'Tap the stronger hand, or Split pot if they are equal.',
+    hl: 'Tap the hand that ranks higher.',
+    above: 'Pick the hand right above it on the ladder.',
+    below: 'Pick the hand right below it on the ladder.',
     pos2name: 'Pick the hand that sits at this position.',
-    name2pos: 'Pick the position of this hand.',
-    versus: 'Tap the stronger hand.'
+    name2pos: 'Pick the position of this hand.'
   };
 
   function render() {
     const t = q.type;
     els.prompt.textContent = PROMPTS[t];
-    els.stage.className = 'stage';
     let html = '';
     if (t === 'cards') html = handHTML(q.cards);
     else if (t === 'holdem') html = `<div class="seat">Table</div>${handHTML(q.board)}<div class="seat">Your hand</div>${handHTML(q.hole, 'hole', 5)}`;
+    else if (t === 'showdown') html =
+      `<div class="seat">Table</div>${handHTML(q.board)}` +
+      `<div class="seats"><div class="seatbox" id="sbYou"><div class="seat">You</div>${handHTML(q.you, 'duo', 5)}</div>` +
+      `<div class="seatbox" id="sbOpp"><div class="seat">Opponent</div>${handHTML(q.opp, 'duo', 7)}</div></div>` +
+      `<div class="opts">${q.opts.map(optHTML).join('')}</div><div class="sd-res" id="sdRes" hidden></div>`;
+    else if (t === 'versus') html =
+      `<button type="button" class="vs" data-id="a"><span class="vs-tag">Hand A</span>${handHTML(q.cards)}<span class="vs-res"></span></button>` +
+      `<button type="button" class="vs" data-id="b"><span class="vs-tag">Hand B</span>${handHTML(q.cards2, '', 5)}<span class="vs-res"></span></button>` +
+      `<div class="opts">${optHTML(q.opts[2])}</div>`;
+    else if (t === 'hl') html = `<div class="opts big">${q.opts.map(optHTML).join('')}</div>`;
+    else if (t === 'above' || t === 'below') html = `<div class="bigname">${H(q.target).name}</div><p class="dirnote">${t === 'above' ? '&#8593; one step stronger' : '&#8595; one step weaker'}</p>`;
     else if (t === 'pos2name') html = `<div class="center"><span class="chip big" role="img" aria-label="Position ${q.pos}">${q.pos}</span></div>`;
-    else if (t === 'name2pos') html = `<div class="bigname">${H(q.pos).name}</div>`;
-    else html =
-      `<button type="button" class="vs" data-side="a" id="vsA"><span class="vs-tag">Hand A</span>${handHTML(q.cards)}<span class="vs-res"></span></button>` +
-      `<button type="button" class="vs" data-side="b" id="vsB"><span class="vs-tag">Hand B</span>${handHTML(q.cards2, '', 5)}<span class="vs-res"></span></button>`;
+    else html = `<div class="bigname">${H(q.pos).name}</div>`;
     els.stage.innerHTML = html;
-    els.namesWrap.hidden = !(t === 'cards' || t === 'holdem' || t === 'pos2name');
-    els.posWrap.hidden = !(t === 'cards' || t === 'holdem' || t === 'name2pos');
+    els.namesWrap.hidden = !(q.kind === 'pick' && q.needName);
+    els.posWrap.hidden = !(q.kind === 'pick' && q.needPos);
     [...nameBtns, ...chipBtns].forEach(b => { b.classList.remove('sel', 'good', 'bad'); b.setAttribute('aria-pressed', 'false'); });
     setFb('', HINTS[t], '');
   }
@@ -536,7 +845,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     els.fbL2.innerHTML = l2;
     els.next.hidden = !kind;
   }
-
   function markSel(list, p) {
     list.forEach(b => { const on = +b.dataset.p === p; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
   }
@@ -549,79 +857,111 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     });
   }
   function judge(container, cs, pos) {
-    if (!container) return [];
     const keys = keyIdx(cs, pos);
     container.querySelectorAll('.card').forEach((c, i) => c.classList.toggle('key', keys.includes(i)));
     container.classList.add('judged');
     return keys;
   }
+  function record(p, ok) { const s = store.stats[p]; if (s) { s.n++; if (!ok) s.miss++; } }
 
-  function pickName(p) {
-    if (!q || q.answered || els.namesWrap.hidden) return;
-    q.selName = p; markSel(nameBtns, p); tryCheck();
-  }
-  function pickPos(p) {
-    if (!q || q.answered || els.posWrap.hidden) return;
-    q.selPos = p; markSel(chipBtns, p); tryCheck();
-  }
+  function pickName(p) { if (!q || q.answered || els.namesWrap.hidden) return; q.selName = p; markSel(nameBtns, p); tryCheck(); }
+  function pickPos(p) { if (!q || q.answered || els.posWrap.hidden) return; q.selPos = p; markSel(chipBtns, p); tryCheck(); }
   function tryCheck() {
-    const t = q.type;
-    const needsBoth = t === 'cards' || t === 'holdem';
-    if (needsBoth && q.selName && q.selPos) check();
-    else if (t === 'pos2name' && q.selName) check();
-    else if (t === 'name2pos' && q.selPos) check();
+    if (q.kind !== 'pick') return;
+    if ((q.needName && !q.selName) || (q.needPos && !q.selPos)) return;
+    checkPick();
   }
 
-  function record(p, ok) { const s = store.stats[p]; s.n++; if (!ok) s.miss++; }
-
-  function check(side) {
+  function checkPick() {
     q.answered = true;
     blurPickers();
-    const t = q.type, p = q.pos, hand = H(p);
-    let ok, l1, l2;
-
-    if (t === 'versus') {
-      const win = q.pos < q.pos2 ? 'a' : 'b';
-      ok = side === win;
-      const W = H(Math.min(q.pos, q.pos2)), L = H(Math.max(q.pos, q.pos2));
-      [[$('vsA'), 'a', q.cards, q.pos], [$('vsB'), 'b', q.cards2, q.pos2]].forEach(([b, s, cs, ps]) => {
-        if (s === win) b.classList.add('win'); else if (s === side) b.classList.add('lose');
-        b.querySelector('.vs-res').textContent = `${H(ps).name} · #${ps}`;
-        judge(b.querySelector('.hand'), cs, ps);
-      });
-      l1 = ok ? `Correct. Hand ${win.toUpperCase()} wins.` : `Hand ${win.toUpperCase()} wins.`;
-      l2 = `${W.name} (#${W.pos}) beats ${L.name} (#${L.pos}).`;
-      record(q.pos, ok); record(q.pos2, ok);
-    } else {
-      const nameOk = q.selName === p, posOk = q.selPos === p;
-      if (!els.namesWrap.hidden) paint(nameBtns, p, q.selName);
-      if (!els.posWrap.hidden) paint(chipBtns, p, q.selPos);
-      if (t === 'cards' || t === 'holdem') ok = nameOk && posOk;
-      else if (t === 'pos2name') ok = nameOk;
-      else ok = posOk;
-
-      let extra = '';
-      if (t === 'cards') judge(els.stage, q.cards, p);
-      if (t === 'holdem') {
-        const keys = judge(els.stage, q.cards, p);
-        const usedHole = keys.filter(i => i >= 5).length;
-        extra = usedHole === 0 ? 'All from the table.' : usedHole === 1 ? 'Uses 1 of your cards.' : 'Uses both your cards.';
-      }
-
-      l1 = ok ? `Correct. ${hand.name} · #${p}` : `It's ${hand.name}, #${p}.`;
+    const t = q.type;
+    const nameOk = !q.needName || q.selName === q.ansName;
+    const posOk = !q.needPos || q.selPos === q.ansPos;
+    const ok = nameOk && posOk;
+    if (q.needName) paint(nameBtns, q.ansName, q.selName);
+    if (q.needPos) paint(chipBtns, q.ansPos, q.selPos);
+    let l1, l2;
+    if (t === 'cards' || t === 'holdem') {
+      const h = H(q.pos);
+      const keys = judge(els.stage, q.cards, q.pos);
+      l1 = (ok ? `Correct. ${h.name} · #${q.pos}` : `It's ${h.name}, #${q.pos}.`) + (q.trap ? '<span class="trap-tag">Trap</span>' : '');
       let detail = '';
       if (!ok) {
-        if (t === 'cards' || t === 'holdem') {
-          if (!nameOk && !posOk) detail = `You said ${H(q.selName).name}, #${q.selPos}.`;
-          else if (!nameOk) detail = `Position right. You named it ${H(q.selName).name}.`;
-          else detail = `Name right. You put it at #${q.selPos}.`;
-        } else if (t === 'pos2name') detail = `You picked ${H(q.selName).name}, which is #${q.selName}.`;
-        else detail = `You picked #${q.selPos}, which is ${H(q.selPos).name}.`;
+        if (!nameOk && !posOk) detail = `You said ${H(q.selName).name}, #${q.selPos}.`;
+        else if (!nameOk) detail = `Position right. You named it ${H(q.selName).name}.`;
+        else detail = `Name right. You put it at #${q.selPos}.`;
       }
-      l2 = [detail, hand.tip, extra].filter(Boolean).join(' ');
-      record(p, ok);
+      const parts = [detail, describe(q.score) + '.'];
+      if (t === 'holdem') { const u = keys.filter(i => i >= 5).length; parts.push(u === 0 ? 'Made only from the table.' : u === 1 ? 'Uses 1 of your cards.' : 'Uses both your cards.'); }
+      parts.push(q.trap || h.tip);
+      l2 = parts.filter(Boolean).join(' ');
+      record(q.pos, ok);
+    } else if (t === 'pos2name' || t === 'name2pos') {
+      const h = H(q.pos);
+      l1 = ok ? `Correct. ${h.name} is #${q.pos}.` : `${h.name} is #${q.pos}.`;
+      const detail = ok ? '' : t === 'pos2name' ? `You picked ${H(q.selName).name}, which is #${q.selName}.` : `You picked #${q.selPos}, which is ${H(q.selPos).name}.`;
+      l2 = [detail, h.alias + '.'].filter(Boolean).join(' ');
+      record(q.pos, ok);
+    } else {
+      const T = H(q.target), A = H(q.ansName);
+      const dir = t === 'above' ? 'above' : 'below';
+      l1 = ok ? `Correct. ${A.name} is right ${dir} ${T.name}.` : `It's ${A.name}.`;
+      l2 = `${T.name} is #${T.pos}, ${A.name} is #${A.pos}.` + (ok ? '' : ` You picked ${H(q.selName).name} (#${q.selName}).`);
+      record(q.target, ok);
     }
+    finish(ok, l1, l2);
+  }
 
+  function checkOpt(choice) {
+    if (!q || q.answered || q.kind !== 'opt') return;
+    q.answered = true;
+    blurPickers();
+    const ok = choice === q.ans;
+    els.stage.querySelectorAll('[data-id]').forEach(b => {
+      const id = b.dataset.id, isVs = b.classList.contains('vs');
+      if (id === q.ans) b.classList.add(isVs ? 'win' : 'good');
+      else if (id === choice) b.classList.add(isVs ? 'lose' : 'bad');
+    });
+    let l1, l2;
+    if (q.type === 'hl') {
+      const W = H(Math.min(q.p1, q.p2)), L = H(Math.max(q.p1, q.p2));
+      l1 = ok ? `Correct. ${W.name} ranks higher.` : `${W.name} ranks higher.`;
+      l2 = `${W.name} is #${W.pos}. ${L.name} is #${L.pos}.`;
+      record(q.p1, ok); record(q.p2, ok);
+    } else if (q.type === 'versus') {
+      const vs = els.stage.querySelectorAll('.vs');
+      [[vs[0], q.cards, q.sa], [vs[1], q.cards2, q.sb]].forEach(([b, cs, sc]) => {
+        b.querySelector('.vs-res').textContent = `${describe(sc)} · #${sc[0]}`;
+        judge(b.querySelector('.hand'), cs, sc[0]);
+      });
+      const res = q.ans === 't' ? 'Split pot.' : `Hand ${q.ans.toUpperCase()} wins.`;
+      l1 = ok ? `Correct. ${res}` : res;
+      l2 = whyText(q.sa, q.sb);
+      record(q.sa[0], ok); record(q.sb[0], ok);
+    } else {
+      const you = $('sbYou'), opp = $('sbOpp');
+      const cls = q.c === 0 ? ['tie', 'tie'] : q.c > 0 ? ['win', 'lose'] : ['lose', 'win'];
+      you.classList.add(cls[0]); opp.classList.add(cls[1]);
+      const tagTxt = { win: 'Wins', lose: 'Loses', tie: 'Split' };
+      const line = (who, hole, res, k) => {
+        const seven = q.board.concat(hole);
+        const five = res.idx.map(i => Object.assign({}, seven[i], { mine: i >= 5 }));
+        return `<div><div class="sd-line"><span class="sd-who">${who}</span><span class="sd-hand">${describe(res.score)}</span><span class="sd-tag ${k}">${tagTxt[k]}</span></div>` +
+          `<div class="ex">${sortFive(five, res.score).map(c => miniHTML(c, c.mine ? ' mine' : '')).join('')}</div></div>`;
+      };
+      const box = $('sdRes');
+      box.innerHTML = line('You', q.you, q.a, cls[0]) + line('Opponent', q.opp, q.b, cls[1]) + '<p class="legend">Outlined cards are the player\'s own 2 cards. The rest come from the table.</p>';
+      box.hidden = false;
+      const res = q.c === 0 ? 'Split pot.' : q.c > 0 ? 'You win.' : 'Opponent wins.';
+      l1 = ok ? `Correct. ${res}` : res;
+      l2 = whyText(q.a.score, q.b.score);
+      record(q.a.score[0], ok); record(q.b.score[0], ok);
+    }
+    finish(ok, l1, l2);
+  }
+
+  function finish(ok, l1, l2) {
     session.total++;
     if (ok) { session.right++; session.streak++; } else session.streak = 0;
     store.best = Math.max(store.best || 0, session.streak);
@@ -638,50 +978,43 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     els.tScore.textContent = `${session.right}/${session.total}`;
     els.tBest.textContent = store.best || 0;
   }
-  function updateGameName() { els.gameName.textContent = G(store.game).name; }
+  function updateGameName() {
+    els.gameName.textContent = G(store.game).short || G(store.game).name;
+    els.diffName.textContent = D(store.diff).name;
+  }
 
-  // ---------- events ----------
+  // ================= events =================
   els.names.addEventListener('click', e => { const b = e.target.closest('.nm'); if (b) pickName(+b.dataset.p); });
   els.chips.addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) pickPos(+b.dataset.p); });
-  els.stage.addEventListener('click', e => {
-    const b = e.target.closest('.vs');
-    if (b && q && q.type === 'versus' && !q.answered) check(b.dataset.side);
-  });
+  els.stage.addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) checkOpt(b.dataset.id); });
   els.next.addEventListener('click', newQuestion);
 
-  document.addEventListener('keydown', e => {
-    if (drawer.classList.contains('open')) { if (e.key === 'Escape' || e.key === 'h' || e.key === 'H') closeDrawer(); return; }
-    if (!els.sheetBack.hidden) { if (e.key === 'Escape') closeSheet(); return; }
-    if (e.metaKey || e.ctrlKey || e.altKey || !q) return;
-    if (e.key === 'h' || e.key === 'H') { openDrawer(); return; }
-    if (q.answered && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); newQuestion(); return; }
-    if (q.answered) return;
-    if (/^[0-9]$/.test(e.key) && !els.posWrap.hidden) { pickPos(e.key === '0' ? 10 : +e.key); return; }
-    if (q.type === 'versus') {
-      const k = e.key.toLowerCase();
-      if (k === 'a' || e.key === 'ArrowUp') check('a');
-      else if (k === 'b' || e.key === 'ArrowDown') check('b');
-    }
-  });
-
-  // ---------- sheets ----------
-  // ---------- all-hands side panel ----------
+  // ================= all-hands side panel =================
   const drawer = $('drawer'), drawerBack = $('drawerBack'), drawerBody = $('drawerBody'), handsBtn = $('openHands');
   function exHTML(h) {
-    const cs = h.ex.map(([r, s]) => ({ r, s }));
+    const cs = h.ex.map(([r, s]) => C(r, s));
     const keys = keyIdx(cs, h.pos);
-    return cs.map((c, i) => `<span class="exc${RED[c.s] ? ' red' : ''}${keys.includes(i) ? '' : ' dim'}" role="img" aria-label="${RN(c.r)} of ${SUIT_N[c.s]}">${RL(c.r)}<i>${SUITS[c.s]}</i></span>`).join('');
+    return cs.map((c, i) => miniHTML(c, keys.includes(i) ? '' : ' dim')).join('');
   }
   function drawerHTML(now) {
     const groups = [['Combos', [1, 2, 3, 4]], ['Patterns', [5, 6]], ['Matching cards', [7, 8, 9, 10]]];
     return groups.map(([g, ps]) => `<div class="grp">${g}</div>` + ps.map(p => {
       const h = H(p), on = now.includes(p);
       return `<div class="row hrow${on ? ' now' : ''}" id="hrow-${p}"><span class="chip sm">${p}</span><div><div class="hrow-top"><span class="row-name">${h.name}</span>${on ? '<span class="now-tag">This round</span>' : ''}</div><div class="alias">${h.alias}</div><div class="ex">${exHTML(h)}</div></div></div>`;
-    }).join('')).join('') + `<p class="sum">Rarer hand = higher position. Bright cards make the hand. Dim cards don't count.</p>`;
+    }).join('')).join('') +
+      `<p class="sum">Rarer hand = higher position. Bright cards make the hand. Dim cards are side cards (kickers).</p>` +
+      `<div class="grp">Same hand type? Ties</div><ul class="rules">` +
+      `<li><b>Main cards first.</b> Pair of Kings beats pair of Queens.</li>` +
+      `<li><b>Then kickers</b>, highest first. K K A beats K K Q.</li>` +
+      `<li><b>Two Pair:</b> top pair, then second pair, then kicker.</li>` +
+      `<li><b>Full House:</b> the triple decides first.</li>` +
+      `<li><b>Flush and High Card:</b> compare card by card from the top.</li>` +
+      `<li><b>Straights:</b> the top card decides. A 2 3 4 5 is the lowest.</li>` +
+      `<li><b>Suits never break ties.</b> Same strength = split pot.</li>` +
+      `<li><b>Hold'em:</b> your best 5 of 7. The table counts for everyone.</li></ul>`;
   }
   function openDrawer() {
-    let now = [];
-    if (q && q.answered) now = q.type === 'versus' ? [q.pos, q.pos2] : [q.pos];
+    const now = q && q.answered ? q.involved : [];
     drawerBody.innerHTML = drawerHTML(now);
     drawer.inert = false;
     drawer.setAttribute('aria-hidden', 'false');
@@ -706,6 +1039,24 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   handsBtn.addEventListener('click', () => drawer.classList.contains('open') ? closeDrawer() : openDrawer());
   $('drawerClose').addEventListener('click', closeDrawer);
   drawerBack.addEventListener('click', closeDrawer);
+
+  document.addEventListener('keydown', e => {
+    if (drawer.classList.contains('open')) { if (e.key === 'Escape' || e.key === 'h' || e.key === 'H') closeDrawer(); return; }
+    if (!els.sheetBack.hidden) { if (e.key === 'Escape') closeSheet(); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey || !q) return;
+    if (e.key === 'h' || e.key === 'H') { openDrawer(); return; }
+    if (q.answered && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); newQuestion(); return; }
+    if (q.answered) return;
+    if (q.kind === 'opt') {
+      const k = e.key.toLowerCase();
+      if (/^[1-9]$/.test(k) && q.opts[+k - 1]) { checkOpt(q.opts[+k - 1].id); return; }
+      if (q.type === 'versus' && ['a', 'b', 't'].includes(k)) checkOpt(k);
+      return;
+    }
+    if (/^[0-9]$/.test(e.key) && !els.posWrap.hidden) pickPos(e.key === '0' ? 10 : +e.key);
+  });
+
+  // ================= sheets =================
   function statsHTML() {
     const rows = HANDS.map(h => {
       const s = store.stats[h.pos];
@@ -717,11 +1068,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
       `<button type="button" class="reset" id="resetBtn">Reset stats</button>`;
   }
   function gamesHTML() {
-    return `<div class="gopts">` + GAMES.map(g =>
-      `<button type="button" class="gopt" data-game="${g.id}" aria-pressed="${g.id === store.game}"><span class="gopt-top"><span class="gopt-name">${g.name}</span>${g.id === store.game ? '<span class="gopt-tag">Playing</span>' : ''}</span><span class="gopt-desc">${g.desc}</span></button>`
-    ).join('') + `</div>`;
+    return `<div class="grp">Difficulty</div><div class="diffseg" role="group" aria-label="Difficulty">` +
+      DIFFS.map(d => `<button type="button" data-diff="${d.id}" aria-pressed="${d.id === store.diff}">${d.name}</button>`).join('') +
+      `</div><p class="diffnote">${D(store.diff).desc}</p><div class="grp">Game</div><div class="gopts">` +
+      GAMES.map(g => `<button type="button" class="gopt" data-game="${g.id}" aria-pressed="${g.id === store.game}"><span class="gopt-top"><span class="gopt-name">${g.name}</span>${g.id === store.game ? '<span class="gopt-tag">Playing</span>' : ''}</span><span class="gopt-desc">${g.desc}</span></button>`).join('') +
+      `</div>`;
   }
-
   let resetArm = null;
   function openSheet(kind) {
     els.sheetTitle.textContent = kind === 'games' ? 'Choose a game' : 'Your stats';
@@ -730,6 +1082,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     els.sheet.scrollTop = 0;
     try { els.sheet.focus({ preventScroll: true }); } catch (e) {}
     if (kind === 'games') {
+      els.sheetBody.querySelectorAll('[data-diff]').forEach(b => b.addEventListener('click', () => {
+        store.diff = b.dataset.diff; save(); updateGameName();
+        const top = els.sheet.scrollTop; openSheet('games'); els.sheet.scrollTop = top;
+        newQuestion();
+      }));
       els.sheetBody.querySelectorAll('.gopt').forEach(b => b.addEventListener('click', () => {
         store.game = b.dataset.game; save(); updateGameName();
         closeSheet(); newQuestion();
@@ -748,16 +1105,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
       openSheet('stats');
     });
   }
-  function closeSheet() {
-    els.sheetBack.hidden = true;
-    blurPickers();
-  }
+  function closeSheet() { els.sheetBack.hidden = true; blurPickers(); }
   $('openGames').addEventListener('click', () => openSheet('games'));
   $('openStats').addEventListener('click', () => openSheet('stats'));
   els.sheetClose.addEventListener('click', closeSheet);
   els.sheetBack.addEventListener('click', e => { if (e.target === els.sheetBack) closeSheet(); });
 
-  // ---------- start ----------
+  // test hook (no effect on play)
+  window.__hd = { score5, cmp, bestOf, best, evaluate, keyIdx, T5, T7, runTemplate, makeVersus, makeShowdown, makeHoldem, makeHand, describe, whyWins, build };
+
   updateGameName();
   updateTally();
   newQuestion();
